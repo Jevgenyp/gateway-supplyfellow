@@ -1,1 +1,28 @@
-spring.application.name=gateway-supplyfellow
+port: 8080 # Default port for the gateway
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: chat-service
+          uri: lb://SUPPLYFELLOWCHATSERVICE
+          predicates:
+            - Path=/chat/**
+          filters:
+            - RewritePath=/chat/(?<segment>.*), /$\{segment}
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/products/**
+          filters:
+            - RewritePath=/products/(?<segment>.*), /$\{segment}
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
